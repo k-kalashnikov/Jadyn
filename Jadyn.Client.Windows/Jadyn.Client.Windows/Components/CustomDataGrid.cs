@@ -67,6 +67,7 @@ namespace Jadyn.Client.Windows.Components
                 RenderDefaultHeader();
                 return;
             }
+            //TODO add render with custom colums
         }
 
         private void RenderBody()
@@ -76,6 +77,7 @@ namespace Jadyn.Client.Windows.Components
                 RenderDefaultBody();
                 return;
             }
+            //TODO add render with custom template and columns
         }
 
         private void RenderDefaultHeader()
@@ -148,19 +150,44 @@ namespace Jadyn.Client.Windows.Components
 
         private async void ImportCommand_Click(object sender, RoutedEventArgs e)
         {
-            var openPicker = new FileOpenPicker();
+            try
+            {
+                var openPicker = new FileOpenPicker();
 
-            var window = ((App)(App.Current)).MainWindow;
+                var window = ((App)(App.Current)).MainWindow;
 
-            var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
+                var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
 
-            WinRT.Interop.InitializeWithWindow.Initialize(openPicker, hWnd);
+                WinRT.Interop.InitializeWithWindow.Initialize(openPicker, hWnd);
 
-            openPicker.ViewMode = PickerViewMode.Thumbnail;
-            openPicker.FileTypeFilter.Add("*");
+                openPicker.ViewMode = PickerViewMode.Thumbnail;
+                openPicker.FileTypeFilter.Add("*");
 
-            var file = await openPicker.PickSingleFileAsync();
-            var models = FileImporter.ImportModelsFromFile<TModel>(file);
+                var file = await openPicker.PickSingleFileAsync();
+                var models = FileImporter.ImportModelsFromFile<TModel>(file);
+
+                await DbContext.Set<TModel>()
+                    .AddRangeAsync(models);
+
+                await DbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                ContentDialog dialog = new ContentDialog();
+                dialog.XamlRoot = this.XamlRoot;
+                dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
+                dialog.Title = "Exception";
+                dialog.PrimaryButtonText = "Ok";
+                dialog.DefaultButton = ContentDialogButton.Primary;
+                dialog.Content = new TextBlock() 
+                {
+                    Text = $"Error => {ex.Message}"
+                };
+
+                var result = await dialog.ShowAsync();
+
+            }
+
         }
     }
 
