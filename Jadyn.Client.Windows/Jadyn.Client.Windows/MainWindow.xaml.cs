@@ -1,3 +1,7 @@
+using Jadyn.Client.Windows.Components;
+using Jadyn.Common.Models;
+using Jadyn.DataAccess;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -23,14 +27,15 @@ namespace Jadyn.Client.Windows
     /// </summary>
     public sealed partial class MainWindow : Window
     {
+
         public MainWindow()
         {
             this.InitializeComponent();
-        }
+            mainContainer.Children.Add(new CustomDataGrid<JadynDbContext, Person>(((App)(App.Current)).ServiceProvider.GetService<JadynDbContext>(),
+                new CustomDataGridSettings()
+                {
 
-        private void myButton_Click(object sender, RoutedEventArgs e)
-        {
-            myButton.Content = "Clicked";
+                }));
         }
     }
 }
