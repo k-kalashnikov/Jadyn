@@ -8,14 +8,14 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="edaefa20-0ec6-4f9a-9e9c-ebab620d53ee"
+    Name="4b658354-9b46-4b07-9725-9c6c4010d637"
     Publisher="CN=Admin"
     Version="1.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="edaefa20-0ec6-4f9a-9e9c-ebab620d53ee" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="4b658354-9b46-4b07-9725-9c6c4010d637" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>Jadyn.Windows.Client (Package)</DisplayName>
+    <DisplayName>Jadyn.Client.Windows (Package)</DisplayName>
     <PublisherDisplayName>Admin</PublisherDisplayName>
     <Logo>Images\StoreLogo.png</Logo>
   </Properties>
@@ -34,8 +34,8 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="Jadyn.Windows.Client (Package)"
-        Description="Jadyn.Windows.Client (Package)"
+        DisplayName="Jadyn.Client.Windows (Package)"
+        Description="Jadyn.Client.Windows (Package)"
         BackgroundColor="transparent"
         Square150x150Logo="Images\Square150x150Logo.png"
         Square44x44Logo="Images\Square44x44Logo.png">
