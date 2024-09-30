@@ -1,3 +1,7 @@
+using Jadyn.Client.Windows.Components;
+using Jadyn.Common.Models;
+using Jadyn.DataAccess;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -25,12 +29,14 @@ namespace Jadyn.Client
     {
         public MainWindow()
         {
+            
             this.InitializeComponent();
-        }
-
-        private void myButton_Click(object sender, RoutedEventArgs e)
-        {
-            myButton.Content = "Clicked";
+            var customDataGrid = new CustomDataGrid<JadynDbContext, Person>(new CustomDataGridSettings()
+            {
+                PageRowCount = 15,
+            });
+            customDataGrid.HorizontalAlignment = HorizontalAlignment.Center;
+            mainContainer.Children.Add(customDataGrid);
         }
     }
 }

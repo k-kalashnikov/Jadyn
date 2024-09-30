@@ -6,9 +6,11 @@
     xmlns:local="using:Jadyn.Client"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ctWinUI="using:CommunityToolkit.WinUI.UI.Controls"
     mc:Ignorable="d">
 
-    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Button x:Name="myButton" Click="myButton_Click">Click Me</Button>
+    <StackPanel x:Name="mainContainer" 
+                Orientation="Vertical">
+
     </StackPanel>
 </Window>
