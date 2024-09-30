@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Jadyn.Client (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "Jadyn.Client (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

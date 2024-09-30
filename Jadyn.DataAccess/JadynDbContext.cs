@@ -7,6 +7,10 @@ namespace Jadyn.DataAccess
     {
         public JadynDbContext(DbContextOptions options) : base(options)
         {
+            if (!Database.CanConnect())
+            {
+                Database.Migrate();
+            }
             if (Database.GetMigrations().Count() != Database.GetAppliedMigrations().Count())
             {
                 Database.Migrate();

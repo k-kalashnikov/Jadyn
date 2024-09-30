@@ -8,16 +8,16 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="4b658354-9b46-4b07-9725-9c6c4010d637"
+    Name="ad86a76a-1db6-44ac-af0e-4b754dfcbada"
     Publisher="CN=Admin"
     Version="1.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="4b658354-9b46-4b07-9725-9c6c4010d637" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="ad86a76a-1db6-44ac-af0e-4b754dfcbada" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>Jadyn.Client.Windows (Package)</DisplayName>
+    <DisplayName>Jadyn.Client</DisplayName>
     <PublisherDisplayName>Admin</PublisherDisplayName>
-    <Logo>Images\StoreLogo.png</Logo>
+    <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
   <Dependencies>
@@ -34,13 +34,13 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="Jadyn.Client.Windows (Package)"
-        Description="Jadyn.Client.Windows (Package)"
+        DisplayName="Jadyn.Client"
+        Description="Jadyn.Client"
         BackgroundColor="transparent"
-        Square150x150Logo="Images\Square150x150Logo.png"
-        Square44x44Logo="Images\Square44x44Logo.png">
-        <uap:DefaultTile Wide310x150Logo="Images\Wide310x150Logo.png" />
-        <uap:SplashScreen Image="Images\SplashScreen.png" />
+        Square150x150Logo="Assets\Square150x150Logo.png"
+        Square44x44Logo="Assets\Square44x44Logo.png">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
+        <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
     </Application>
   </Applications>
