@@ -1,4 +1,5 @@
-﻿using Jadyn.Client.Windows.Utils;
+﻿using Jadyn.Client.Components;
+using Jadyn.Client.Windows.Utils;
 using Jadyn.Common.Models;
 using Jadyn.DataAccess;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +23,8 @@ namespace Jadyn.Client.Windows.Components
     {
         public int CountPage { get; set; }
         private TDbContext DbContext { get; set; }
-        private StackPanel MainContainer { get; set; }
+        private StackPanel MainStackPanel { get; set; }
+        private ScrollView MainContainer { get; set; }
         private Grid MainGrid { get; set; }
         private CommandBar MainCommandBar { get; set; }
         private CommandBar PaginationControlBar { get; set; }
@@ -44,14 +46,20 @@ namespace Jadyn.Client.Windows.Components
 
         private void Render()
         {
-            MainContainer = new StackPanel();
+            MainContainer = new ScrollView()
+            {
+                MaxHeight = 1000
+            };
+            MainStackPanel = new StackPanel();
             MainCommandBar = new CommandBar();
             PaginationControlBar = new CommandBar();
             MainGrid = new Grid();
 
-            MainContainer.Children.Add(MainCommandBar);
-            MainContainer.Children.Add(MainGrid);
-            MainContainer.Children.Add(PaginationControlBar);
+            MainStackPanel.Children.Add(MainCommandBar);
+            MainStackPanel.Children.Add(MainGrid);
+            MainStackPanel.Children.Add(PaginationControlBar);
+
+            MainContainer.Content = MainStackPanel;
 
             this.Content = MainContainer;
 
@@ -277,8 +285,15 @@ namespace Jadyn.Client.Windows.Components
                 Grid.SetRow(tempActionSPBorder, item.i + 1);
             }
 
+            MainGrid.RowDefinitions.Add(new RowDefinition()
+            {
+                Height = GridLength.Auto
+            });
 
-
+            MainGrid.RowDefinitions.Add(new RowDefinition()
+            {
+                Height = GridLength.Auto
+            });
 
         }
 
@@ -327,7 +342,85 @@ namespace Jadyn.Client.Windows.Components
 
         private void EditButton_Click(object sender, RoutedEventArgs e)
         {
+            ((AppBarButton)sender).IsEnabled = false;
 
+            UIElement currentElement = (AppBarButton)sender;
+
+            // Итерируемся по родительским элементам
+            while (currentElement != null)
+            {
+                if (currentElement is Border)
+                {
+                    // Нашли Border, возвращаем его
+                    break;
+                }
+
+                // Переходим к следующему родительскому элементу
+                currentElement = VisualTreeHelper.GetParent(currentElement) as UIElement;
+            }
+
+            if (!MainGrid.Children.Contains(currentElement))
+            {
+                return;
+            }
+
+            var itemIndex = Grid.GetRow((Border)currentElement);
+            var model = Items[itemIndex - 1];
+            var tempEditForm = new CustomEditForm<TModel>(model);
+            tempEditForm.SubmitCallBack = () =>
+            {
+                MainGrid.Children.Remove(tempEditForm);
+                var tempModel = tempEditForm.Model;
+                tempEditForm = null;
+                ((AppBarButton)sender).IsEnabled = true;
+                var otherRows = MainGrid.Children
+                    .Where(m => Grid.GetRow((Border)m) > itemIndex)
+                    .ToList();
+
+                foreach (var item in otherRows)
+                {
+                    Grid.SetRow((Border)item, Grid.GetRow((Border)item) - 2);
+                }
+                DbContext.Set<TModel>()
+                    .Update(tempModel);
+                DbContext.SaveChanges();
+                MainGrid.Children.Clear();
+                UpdateData();
+                RenderHeader();
+                RenderBody();
+
+            };
+            tempEditForm.CancelCallBack = () =>
+            {
+                MainGrid.Children.Remove(tempEditForm);
+                tempEditForm = null;
+                ((AppBarButton)sender).IsEnabled = true;
+                var otherRows = MainGrid.Children
+                    .Where(m => Grid.GetRow((Border)m) > itemIndex)
+                    .ToList();
+
+                foreach (var item in otherRows)
+                {
+                    Grid.SetRow((Border)item, Grid.GetRow((Border)item) - 2);
+                }
+
+            };
+            tempEditForm.Render();
+
+            var otherRows = MainGrid.Children
+                .Where(m => Grid.GetRow((Border)m) > itemIndex)
+                .ToList();
+
+            foreach (var item in otherRows)
+            {
+                Grid.SetRow((Border)item, Grid.GetRow((Border)item) + 2);
+            }
+
+            MainGrid.Children.Add(tempEditForm);
+
+            Grid.SetColumn(tempEditForm, 0);
+            Grid.SetColumnSpan(tempEditForm, MainGrid.ColumnDefinitions.Count);
+            Grid.SetRow(tempEditForm, itemIndex + 1);
         }
 
         private void RightPageButton_Click(object sender, RoutedEventArgs e)
@@ -397,7 +490,7 @@ namespace Jadyn.Client.Windows.Components
 
                 tempStackPanel.Children.Add(tempProgressBar);
 
-                MainContainer.Children.Insert(0, tempStackPanel);
+                MainStackPanel.Children.Insert(0, tempStackPanel);
 
                 //var tempProgressDialog = new ContentDialog();
                 //tempProgressDialog.XamlRoot = this.XamlRoot;
@@ -415,7 +508,7 @@ namespace Jadyn.Client.Windows.Components
                     tempProgressLabel.Text = $"Progress: {value}%";
                     if (value == 100)
                     {
-                        MainContainer.Children.Remove(tempStackPanel);
+                        MainStackPanel.Children.Remove(tempStackPanel);
                     }
                 });
 
@@ -426,7 +519,7 @@ namespace Jadyn.Client.Windows.Components
             }
             catch (Exception ex)
             {
-                MainContainer.Children.Remove(tempStackPanel);
+                MainStackPanel.Children.Remove(tempStackPanel);
                 ContentDialog dialog = new ContentDialog();
                 dialog.XamlRoot = this.XamlRoot;
                 dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
