@@ -31,6 +31,7 @@ namespace Jadyn.Client.Windows.Components
         private AppBarButton LeftButton { get; set; }
         private AppBarButton RightButton { get; set; }
         private CustomDataGridSettings Settings { get; set; }
+        private TextBlock PageCountLabel { get; set; }
         private int CurrentPage { get; set; } = 0;
         private int TotalCount { get; set; } = 0;
         private IFileImporter FileImporter { get; set; }
@@ -53,11 +54,16 @@ namespace Jadyn.Client.Windows.Components
             MainStackPanel = new StackPanel();
             MainCommandBar = new CommandBar();
             PaginationControlBar = new CommandBar();
+            PageCountLabel = new TextBlock()
+            {
+                HorizontalAlignment = HorizontalAlignment.Left,
+            };
             MainGrid = new Grid();
 
             MainStackPanel.Children.Add(MainCommandBar);
             MainStackPanel.Children.Add(MainGrid);
             MainStackPanel.Children.Add(PaginationControlBar);
+            MainStackPanel.Children.Add(PageCountLabel);
 
             MainContainer.Content = MainStackPanel;
 
@@ -306,6 +312,8 @@ namespace Jadyn.Client.Windows.Components
                 .Skip(CurrentPage * CountPage)
                 .Take(CountPage)
                 .ToList();
+
+            PageCountLabel.Text = $"From {CurrentPage * CountPage + 1} to {CurrentPage * CountPage + 1 + CountPage} of {TotalCount}";
         }
         
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
@@ -516,6 +524,10 @@ namespace Jadyn.Client.Windows.Components
                     .AddRangeAsync(models);
 
                 await DbContext.SaveChangesAsync();
+                MainGrid.Children.Clear();
+                UpdateData();
+                RenderHeader();
+                RenderBody();
             }
             catch (Exception ex)
             {

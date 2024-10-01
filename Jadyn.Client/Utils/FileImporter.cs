@@ -32,14 +32,26 @@ namespace Jadyn.Client.Windows.Utils
                 using (var workbook = new XLWorkbook(stream))
                 {
                     var worksheet = workbook.Worksheet(1);
+
+
+
                     var columnHeaders = worksheet.Row(1).CellsUsed();
                     var headers = columnHeaders.Select(m => m.Value.GetText())
                         .ToList();
 
-                    var rows = worksheet.RowsUsed().Skip(1);
-                    foreach (var row in rows.Select((value, rowIndex) => new { rowIndex, value }))
+                   
+                    int currentRow = 2;
+                    while (true)
                     {
+                        var row = worksheet.Row(currentRow);
+
+                        if (row.IsEmpty())
+                        {
+                            break;
+                        }
+
                         var tempModel = Activator.CreateInstance<TModel>();
+
 
                         foreach (var column in headers.Select((value, columnIndex) => new { columnIndex, value }))
                         {
@@ -52,7 +64,7 @@ namespace Jadyn.Client.Windows.Utils
                             {
                                 throw new Exception($"Undefined Property: {prop.Name} with type: {prop.PropertyType.Name}");
                             }
-                            var tempCell = row.value.Cell(column.columnIndex + 1);
+                            var tempCell = row.Cell(column.columnIndex + 1);
                             var tempCellValue = tempCell.Value.ToString();
 
                             var valueObj = ConvertFunctions[prop.PropertyType].Invoke(tempCellValue);
@@ -70,10 +82,18 @@ namespace Jadyn.Client.Windows.Utils
                             }
                         }
 
-                        callback.Invoke(((row.rowIndex + 1) / (double)rows.Count()) * 100);
+                        callback.Invoke(((currentRow + 1) / (double)worksheet.RowCount()) * 100);
 
                         result.Add(tempModel);
+
+                        currentRow++;
                     }
+
+                    //foreach (var row in rows.Select((value, rowIndex) => new { rowIndex, value }))
+                    //{
+
+
+                    //}
                 }
             }
 
